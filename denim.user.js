@@ -1,7 +1,8 @@
 // ==UserScript== 
 //@id		deNimify
 //@name         deNimify
-//@version	.1
+//@version	1.0
+//@description  Combines and hides comments on zetaboards for users on the black list
 //@author	Bruddah JD
 //@include	http://s4.zetaboards.com/*
 // ==/UserScript==
