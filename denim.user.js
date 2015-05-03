@@ -1,54 +1,61 @@
 // ==UserScript== 
-//@id		deNimify
+//@id           deNimify
 //@name         deNimify
-//@version	1.0
+//@version      1.0
 //@description  Combines and hides comments on zetaboards for users on the black list
-//@author	Bruddah JD
-//@include	http://s4.zetaboards.com/*
+//@author       Bruddah JD
+//@include      http://*.zetaboards.com/*/topic/*
 // ==/UserScript==
 
-var blacklist = ["Hi I'm Asylum", 'kleenex', 'emaciated ape'];
+var blacklist = ["Hi I'm Asylum", "kleenex", "emaciated ape", "Shou"];
 
-var postInfos = document.getElementsByClassName('c_username');
+var postInfos = document.getElementsByClassName("c_username");
 
-for (var i = 0; i < postInfos.length; i++) {
+for (var i = 0, l = postInfos.length; i < l; i++) {
 	var userName = getUsername(postInfos[i]);
 	
 	if (isBlacklisted(userName) >= 0) {
 		var topLevelPost = postInfos[i]; 
-		var levels = 0; 
-		if (i+1 < postInfos.length){ 
+		var levels = 0;
+        
+		if (i + 1 < postInfos.length) {
 			var textToAppend = "<hr>"; 
 			console.log("User found: " + userName);
-			retObj = processNextPost(userName, postInfos, i, textToAppend, levels); 
+			retObj = processNextPost(userName, postInfos, i, textToAppend, levels);
+            
 			if (retObj.text !== "<hr>") {
 				combinePosts(topLevelPost, retObj.text);
 			}
+            
 			console.log("Levels " + retObj.levels);
 		}
+        
 		i += retObj.levels;
 	}
 }
 
 function processNextPost(userName, postInfos, i, textToAppend, levels) {
 	console.log("In Text " + textToAppend);
-	if ( i+1 < postInfos.length){
+	if ( i + 1 < postInfos.length) {
 		if (userName === getUsername(postInfos[i+1])) {
 			var text = "";
 			text = text.concat(textToAppend);
 			text = text.concat(getContentToAppend(postInfos[i+1]));
 			text = text.concat("<hr>");
-			hidePost(postInfos[i+1]);
-			levels+=1; 
-			return processNextPost(userName, postInfos, i+1, text, levels);
+            
+			hidePost(postInfos[i + 1]);
+			levels += 1;
+            
+			return processNextPost(userName, postInfos, i + 1, text, levels);
 		} 
 	}
-	return {text : textToAppend, levels : levels};
+    
+	return { text : textToAppend, levels : levels };
 	
 }
 
 function getUsername(userNameElm) {
-	return userNameElm.getElementsByClassName('member')[0].textContent;
+	return userNameElm.getElementsByClassName("member")[0].textContent;
 }
 
 function isBlacklisted(userName) {
@@ -61,21 +68,22 @@ function getContentToAppend(userNameElm) {
 
 function getContent(userNameElm) {
 	var postRow = getPostRow(userNameElm);
-	var postElement = postRow.getElementsByClassName('c_post');
+	var postElement = postRow.getElementsByClassName("c_post");
 	var value = postElement[0].innerHTML;
 	console.log("Got " + value);
+    
 	return value;
 }
 
 function hidePost(userNameElm) {
-	getPostRow(userNameElm).innerHTML='';
-	getPostRow(userNameElm).style.visibility='hidden';
-	getSigRow(userNameElm).innerHTML='';
-	getSigRow(userNameElm).style.visibility='hidden';
-	getFooterRow(userNameElm).innerHTML='';
-	getFooterRow(userNameElm).style.visibility='hidden';
-	//userNameElm.parentElement.style.visibility='hidden';
-	//userNameElm.parentElement.innerHTML='';
+    getPostRow(userNameElm).innerHTML = "";
+	getPostRow(userNameElm).style.visibility = "hidden";
+	getSigRow(userNameElm).innerHTML = "";
+	getSigRow(userNameElm).style.visibility = "hidden";
+	getFooterRow(userNameElm).innerHTML = "";
+	getFooterRow(userNameElm).style.visibility = "hidden";
+	//userNameElm.parentElement.style.visibility = "hidden";
+	//userNameElm.parentElement.innerHTML = "";
 	
 }
 
@@ -93,5 +101,5 @@ function getFooterRow(userNameElm) {
 
 function combinePosts(topLevelPost, textToAppend){ 
 	var topPostContent = getContent(topLevelPost);
-	getPostRow(topLevelPost).getElementsByClassName('c_post')[0].innerHTML =  topPostContent + textToAppend;
+	getPostRow(topLevelPost).getElementsByClassName("c_post")[0].innerHTML =  topPostContent + textToAppend;
 }
